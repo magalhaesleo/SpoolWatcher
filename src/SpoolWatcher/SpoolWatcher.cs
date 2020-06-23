@@ -10,7 +10,7 @@ using System.Threading;
 
 namespace SpoolerWatcher
 {
-    public sealed class SpoolWatcher : IDisposable
+    public sealed class SpoolWatcher : ISpoolWatcher, IDisposable
     {
         private SafeHPrinter hPrinter;
         private bool disposed = false;
@@ -23,6 +23,14 @@ namespace SpoolerWatcher
         private Thread tNotifications;
 
         public event EventHandler<SpoolerNotificationEventArgs> SpoolerNotificationReached;
+
+        public SpoolWatcher(string printerName, params NotifyOptions[] notifyOptions) : this(printerName, PrinterNotifyCategory.CategoryAll, notifyOptions)
+        {
+        }
+
+        public SpoolWatcher(string printerName, PrinterChange printerChange) : this(printerName, PrinterNotifyCategory.CategoryAll, printerChange)
+        {
+        }
 
         public SpoolWatcher(string printerName, PrinterNotifyCategory printerNotifyCategory, params NotifyOptions[] notifyOptions) : this(printerName, printerNotifyCategory, 0, notifyOptions)
         {
@@ -76,6 +84,13 @@ namespace SpoolerWatcher
             }
 
             Marshal.FreeHGlobal(printerNotifyOptions.pTypes);
+
+            if (notificationHandle.IsInvalid)
+            {
+                var errorCode = Marshal.GetLastWin32Error();
+
+                throw new InvalidOperationException($"Error: {errorCode}");
+            }
 
             tNotifications = new Thread(() => WaitForNotifications());
 

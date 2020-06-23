@@ -3,6 +3,9 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>SpoolerWatcher</RootNamespace>
+    <PackageProjectUrl>https://github.com/magalhaesleo/SpoolWatcher</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/magalhaesleo/SpoolWatcher.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
 </Project>

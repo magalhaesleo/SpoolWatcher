@@ -9,24 +9,24 @@ namespace SpoolerWatchers.Tests
 {
     public class SpoolWatcherIntegrationTest
     {
-        private SpoolWatcher spoolWatcher;
         private PrintQueue printQueue;
 
         [SetUp]
         public void Setup()
         {
-            var fields = new JobNotifyFields[] { JobNotifyFields.Status };
-
-            var jOptions = new JobNotifyOptions(fields);
-
             printQueue = LocalPrintServer.GetDefaultPrintQueue();
-
-            spoolWatcher = new SpoolWatcher(printQueue.Name, PrinterNotifyCategory.CategoryAll, jOptions);
         }
 
         [Test]
         public void Print_Test_Page_Should_Call_Event()
         {
+            var fields = new JobNotifyFields[] { JobNotifyFields.STATUS };
+
+            var jOptions = new JobNotifyOptions(fields);
+            var pOptions = new PrinterNotifyOptions(new PrinterNotifyFields[] { PrinterNotifyFields.STATUS_STRING });
+
+            using var spoolWatcher = new SpoolWatcher(printQueue.Name, jOptions, pOptions);
+
             spoolWatcher.Start();
 
             using var waitEv = new ManualResetEventSlim();
@@ -35,7 +35,7 @@ namespace SpoolerWatchers.Tests
             {
                 waitEv.Set();
             };
-
+            
             var job = printQueue.AddJob();
 
             var bytes = Encoding.UTF8.GetBytes("Test printing");
@@ -45,8 +45,12 @@ namespace SpoolerWatchers.Tests
             Assert.That(waitEv.Wait(timeout: TimeSpan.FromSeconds(5)));
 
             spoolWatcher.Stop();
+        }
 
-            spoolWatcher.Dispose();
+        [TearDown]
+        public void TearDown()
+        {
+            printQueue.Dispose();
         }
     }
 }

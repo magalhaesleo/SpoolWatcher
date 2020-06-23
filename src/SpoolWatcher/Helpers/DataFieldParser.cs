@@ -1,6 +1,6 @@
 ﻿using SpoolerWatcher.Events;
 using SpoolerWatcher.Native.Structures;
-using System;
+
 using System.Runtime.InteropServices;
 
 namespace SpoolerWatcher.Helpers
