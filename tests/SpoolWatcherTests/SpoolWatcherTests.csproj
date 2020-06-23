@@ -1,10 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
-
-    <IsPackable>false</IsPackable>
-
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+	  <LangVersion>latest</LangVersion>
+	  <IsPackable>false</IsPackable>
     <RootNamespace>SpoolWatcher.Tests</RootNamespace>
   </PropertyGroup>
 
@@ -17,5 +16,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\SpoolWatcher\SpoolWatcher.csproj" />
   </ItemGroup>
+
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.WindowsDesktop.App" />
+	</ItemGroup>
 
 </Project>

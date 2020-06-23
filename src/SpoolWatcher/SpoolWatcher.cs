@@ -1,37 +1,40 @@
-﻿using SpoolWatcher.Native;
-using SpoolWatcher.Options;
+﻿using SpoolerWatcher.Events;
+using SpoolerWatcher.Handles;
+using SpoolerWatcher.Helpers;
+using SpoolerWatcher.Native.Structures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Threading.Tasks;
 
-namespace SpoolWatcher
+namespace SpoolerWatcher
 {
-    public class SpoolWatcher : IDisposable
+    public sealed class SpoolWatcher : IDisposable
     {
-        private IntPtr hPrinter = IntPtr.Zero;
+        private SafeHPrinter hPrinter;
         private bool disposed = false;
         private readonly string printerName;
         private readonly PrinterChange printerChange;
         private readonly PrinterNotifyCategory printerNotifyCategory;
         private readonly NotifyOptions[] notifyOptions;
-        private ManualResetEventSlim stopEvent = new ManualResetEventSlim();
-        private NotificationWaitHandle notificationWaitHandle;
-        private Task waitEvents;
+        private readonly ManualResetEventSlim stopEvent = new ManualResetEventSlim();
+        private SafeNotificationHandle notificationHandle;
+        private Thread tNotifications;
 
-        public SpoolWatcher(string printerName, PrinterNotifyCategory printerNotifyCategory, params NotifyOptions[] notifyOptions) : this(printerName, 0, printerNotifyCategory, notifyOptions)
+        public event EventHandler<SpoolerNotificationEventArgs> SpoolerNotificationReached;
+
+        public SpoolWatcher(string printerName, PrinterNotifyCategory printerNotifyCategory, params NotifyOptions[] notifyOptions) : this(printerName, printerNotifyCategory, 0, notifyOptions)
         {
             if (notifyOptions == null || notifyOptions.Length == 0)
-                throw new ArgumentNullException(nameof(notifyOptions));
+                throw new ArgumentException(nameof(notifyOptions));
         }
 
-        public SpoolWatcher(string printerName, PrinterChange printerChange, PrinterNotifyCategory printerNotifyCategory) : this(printerName, printerChange, printerNotifyCategory, null)
+        public SpoolWatcher(string printerName, PrinterNotifyCategory printerNotifyCategory, PrinterChange printerChange) : this(printerName, printerNotifyCategory, printerChange, null)
         {
         }
 
-        public SpoolWatcher(string printerName, PrinterChange printerChange, PrinterNotifyCategory printerNotifyCategory, params NotifyOptions[] notifyOptions)
+        public SpoolWatcher(string printerName, PrinterNotifyCategory printerNotifyCategory, PrinterChange printerChange, params NotifyOptions[] notifyOptions)
         {
             this.printerName = printerName;
             this.printerChange = printerChange;
@@ -48,11 +51,11 @@ namespace SpoolWatcher
                 throw new InvalidOperationException($"Error: {errorCode}");
             }
 
-            var printerNotifyOptions = new PrinterNotifyOptions();
+            var printerNotifyOptions = new PrinterNotifyOptionsNative();
             printerNotifyOptions.Version = 2;
             printerNotifyOptions.Count = (uint)notifyOptions.Length;
 
-            var pNotifyOptionsSz = Marshal.SizeOf<PrinterNotifyOptions>();
+            var pNotifyOptionsSz = Marshal.SizeOf<PrinterNotifyOptionsNative>();
 
             printerNotifyOptions.pTypes = Marshal.AllocHGlobal(pNotifyOptionsSz * notifyOptions.Length);
 
@@ -63,11 +66,9 @@ namespace SpoolWatcher
                 var ptr = IntPtr.Add(printerNotifyOptions.pTypes, i * pNotifyOptionsSz);
 
                 Marshal.StructureToPtr(optionsType.ElementAt(i), ptr, false);
-            }            
+            }
 
-            var hNotification = WinSpool.FindFirstPrinterChangeNotification(hPrinter, (uint)printerChange, (uint)printerNotifyCategory, ref printerNotifyOptions);
-
-            notificationWaitHandle = new NotificationWaitHandle(hNotification);
+            notificationHandle = WinSpool.FindFirstPrinterChangeNotification(hPrinter, (uint)printerChange, (uint)printerNotifyCategory, ref printerNotifyOptions);
 
             foreach (var optionType in optionsType)
             {
@@ -76,32 +77,65 @@ namespace SpoolWatcher
 
             Marshal.FreeHGlobal(printerNotifyOptions.pTypes);
 
-            waitEvents = Task.Run(() => WaitForNotifications());
+            tNotifications = new Thread(() => WaitForNotifications());
+
+            tNotifications.Start();
         }
 
         public void Stop()
         {
             stopEvent.Set();
+
+            tNotifications.Join();
+
+            notificationHandle.Close();
         }
 
         private void WaitForNotifications()
         {
-            var handles = new WaitHandle[] { notificationWaitHandle, stopEvent.WaitHandle };
+            var handles = new WaitHandle[] { notificationHandle, stopEvent.WaitHandle };
 
-            while (true)
+            while (WaitHandle.WaitAny(handles) == 0)
             {
-                var index = WaitHandle.WaitAny(handles);
-
-                if (index == 0)
+                if (WinSpool.FindNextPrinterChangeNotification(notificationHandle, out var change, IntPtr.Zero, out var pNotifyInfo))
                 {
-                    if (WinSpool.FindNextPrinterChangeNotification(notificationWaitHandle.SafeWaitHandle.DangerousGetHandle(), out var change, IntPtr.Zero, out var pNotifyInfo))
+                    if (SpoolerNotificationReached != null)
                     {
-                        WinSpool.FreePrinterNotifyInfo(pNotifyInfo);
+                        PrinterNotifyInfo printerNotifyInfo = pNotifyInfo;
+
+                        var datas = new List<NotificationInfo>();
+
+                        for (uint i = 0; i < printerNotifyInfo.Count; i++)
+                        {
+                            var notificationInfo = new NotificationInfo();
+
+                            notificationInfo.Id = printerNotifyInfo.aData[i].Id;
+
+                            switch ((NotifyType)printerNotifyInfo.aData[i].Field)
+                            {
+                                case NotifyType.Job:
+                                    notificationInfo.Data = DataFieldParser.GetJobTypeData(printerNotifyInfo.aData[i]);
+                                        break;
+                                case NotifyType.Printer:
+                                    notificationInfo.Data = DataFieldParser.GetPrinterTypeData(printerNotifyInfo.aData[i]);
+                                    break;
+                                default:
+                                    break;
+                            }                            
+
+                            datas.Add(notificationInfo);
+                        }
+
+                        var evArgs = new SpoolerNotificationEventArgs
+                        {
+                            PrinterChange = (PrinterChange)change,
+                            NotificationsData = datas.ToArray()
+                        };
+
+                        SpoolerNotificationReached(this, evArgs);
                     }
-                }
-                else
-                {
-                    break;
+
+                    pNotifyInfo.Close();
                 }
             }
         }
@@ -121,7 +155,7 @@ namespace SpoolWatcher
                 switch (notifyOption.NotifyType)
                 {
                     case NotifyType.Printer:
-                        var pNotifyOption = (PrinterWatcherOptions)notifyOption;
+                        var pNotifyOption = (PrinterNotifyOptions)notifyOption;
 
                         optionType.Type = (ushort)NotifyType.Printer;
                         optionType.Count = (uint)pNotifyOption.PrinterNotifyFields.Length;
@@ -162,32 +196,17 @@ namespace SpoolWatcher
             return printerNotifyOptionsTypes;
         }
 
-        ~SpoolWatcher()
-        {
-            Dispose(false);
-        }
 
         public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected void Dispose(bool disposing)
         {
             if (disposed)
                 return;
 
-            if (disposing)
-            {
-                stopEvent.Dispose();
-            }
-
-            if (hPrinter != IntPtr.Zero)
-                WinSpool.ClosePrinter(hPrinter);
-
-            if (notificationWaitHandle != null && !notificationWaitHandle.SafeWaitHandle.IsInvalid)
-                WinSpool.FindClosePrinterChangeNotification(notificationWaitHandle.SafeWaitHandle.DangerousGetHandle());
+            stopEvent.Dispose();
+            
+            notificationHandle?.Dispose();
+            
+            hPrinter?.Dispose();
 
             disposed = true;
         }

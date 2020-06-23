@@ -1,4 +1,4 @@
-﻿namespace SpoolWatcher.Options
+﻿namespace SpoolerWatcher
 {
     public enum NotifyType
     {

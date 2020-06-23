@@ -1,4 +1,4 @@
-﻿namespace SpoolWatcher
+﻿namespace SpoolerWatcher
 {
     public enum PrinterNotifyCategory
     {

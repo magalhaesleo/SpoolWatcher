@@ -1,14 +1,12 @@
-﻿using SpoolWatcher.Options.Printers;
-
-namespace SpoolWatcher.Options
+﻿namespace SpoolerWatcher
 {
-    public class PrinterWatcherOptions : NotifyOptions
+    public class PrinterNotifyOptions : NotifyOptions
     {
         public override NotifyType NotifyType => NotifyType.Printer;
 
         public PrinterNotifyFields[] PrinterNotifyFields { get; }
 
-        public PrinterWatcherOptions(PrinterNotifyFields[] printerNotifyFields)
+        public PrinterNotifyOptions(PrinterNotifyFields[] printerNotifyFields)
         {
             PrinterNotifyFields = printerNotifyFields;
         }

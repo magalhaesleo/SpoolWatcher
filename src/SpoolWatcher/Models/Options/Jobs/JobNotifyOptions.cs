@@ -1,7 +1,4 @@
-﻿using SpoolWatcher.Options;
-using SpoolWatcher.Options.Jobs;
-
-namespace SpoolWatcher
+﻿namespace SpoolerWatcher
 {
     public class JobNotifyOptions : NotifyOptions
     {

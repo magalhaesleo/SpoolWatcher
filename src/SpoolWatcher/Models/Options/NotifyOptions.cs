@@ -1,6 +1,4 @@
-﻿using SpoolWatcher.Options;
-
-namespace SpoolWatcher
+﻿namespace SpoolerWatcher
 {
     public abstract class NotifyOptions
     {

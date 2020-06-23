@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace SpoolWatcher.Native
+namespace SpoolerWatcher
 {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct PrinterNotifyOptions
+    internal struct PrinterNotifyOptionsNative
     {
         public uint Version;
         public uint Flags;
