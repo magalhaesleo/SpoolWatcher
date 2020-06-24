@@ -10,7 +10,7 @@ using System.Threading;
 
 namespace SpoolerWatcher
 {
-    public sealed class SpoolWatcher : ISpoolWatcher, IDisposable
+    public class SpoolWatcher : ISpoolWatcher, IDisposable
     {
         private SafeHPrinter hPrinter;
         private bool disposed = false;
@@ -201,19 +201,27 @@ namespace SpoolerWatcher
             return printerNotifyOptionsTypes;
         }
 
-
-        public void Dispose()
+        protected virtual void Dispose(bool disposing)
         {
             if (disposed)
                 return;
 
-            stopEvent.Dispose();
-            
-            notificationHandle?.Dispose();
-            
-            hPrinter?.Dispose();
+            if (disposing)
+            {
+                stopEvent.Dispose();
+
+                notificationHandle?.Dispose();
+
+                hPrinter?.Dispose();
+            }
 
             disposed = true;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }
