@@ -102,7 +102,7 @@ namespace SpoolerWatcher
                 {
                     if (SpoolerNotificationReached != null)
                     {
-                        PrinterNotifyInfo printerNotifyInfo = pNotifyInfo;
+                        PrinterNotifyInfoCustom printerNotifyInfo = pNotifyInfo;
 
                         var datas = new List<NotificationInfo>();
 
@@ -112,7 +112,7 @@ namespace SpoolerWatcher
 
                             notificationInfo.Id = printerNotifyInfo.aData[i].Id;
 
-                            switch ((NotifyType)printerNotifyInfo.aData[i].Field)
+                            switch (printerNotifyInfo.aData[i].Type)
                             {
                                 case NotifyType.Job:
                                     notificationInfo.Type = NotifyType.Job;
