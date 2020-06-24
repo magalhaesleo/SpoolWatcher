@@ -155,7 +155,7 @@ namespace SpoolerWatcher
             {
                 var pOptionType = new PrinterNotifyOptionsType();
 
-                pOptionType.Type = (ushort)NotifyType.Printer;
+                pOptionType.Type = NotifyType.Printer;
 
                 pOptionType.Count = (uint)printerFields.Count();
 
@@ -179,7 +179,7 @@ namespace SpoolerWatcher
             {
                 var jOptionType = new PrinterNotifyOptionsType();
 
-                jOptionType.Type = (ushort)NotifyType.Job;
+                jOptionType.Type = NotifyType.Job;
 
                 jOptionType.Count = (uint)jobFields.Count();
 
