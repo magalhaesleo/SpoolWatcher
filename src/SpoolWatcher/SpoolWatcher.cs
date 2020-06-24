@@ -90,6 +90,8 @@ namespace SpoolerWatcher
             tNotifications.Join();
 
             notificationHandle.Close();
+
+            hPrinter.Close();
         }
 
         private void WaitForNotifications()
