@@ -15,6 +15,6 @@ namespace SpoolerWatcher.Handles
             return WinSpool.FreePrinterNotifyInfo(handle);
         }
 
-        public static implicit operator PrinterNotifyInfo(SafePrinterNotifyInfo safePrinterNotifyInfo) => !safePrinterNotifyInfo.IsInvalid ? default : Marshal.PtrToStructure<PrinterNotifyInfo>(safePrinterNotifyInfo.handle);
+        public static implicit operator PrinterNotifyInfo(SafePrinterNotifyInfo safePrinterNotifyInfo) => safePrinterNotifyInfo.IsInvalid ? default : Marshal.PtrToStructure<PrinterNotifyInfo>(safePrinterNotifyInfo.handle);
     }
 }
