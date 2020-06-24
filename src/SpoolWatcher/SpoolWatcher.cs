@@ -129,9 +129,11 @@ namespace SpoolerWatcher
                             switch ((NotifyType)printerNotifyInfo.aData[i].Field)
                             {
                                 case NotifyType.Job:
+                                    notificationInfo.Type = NotifyType.Job;
                                     notificationInfo.Data = DataFieldParser.GetJobTypeData(printerNotifyInfo.aData[i]);
                                         break;
                                 case NotifyType.Printer:
+                                    notificationInfo.Type = NotifyType.Printer;
                                     notificationInfo.Data = DataFieldParser.GetPrinterTypeData(printerNotifyInfo.aData[i]);
                                     break;
                                 default:
