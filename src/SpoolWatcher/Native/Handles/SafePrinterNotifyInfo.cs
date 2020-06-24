@@ -16,14 +16,14 @@ namespace SpoolerWatcher.Handles
             return WinSpool.FreePrinterNotifyInfo(handle);
         }
 
-        public static implicit operator PrinterNotifyInfoCustom(SafePrinterNotifyInfo safePrinterNotifyInfo)
+        public static implicit operator PrinterNotifyInfo(SafePrinterNotifyInfo safePrinterNotifyInfo)
         {
             if (safePrinterNotifyInfo.IsInvalid)
                 return default;
 
-            var notifyInfo = Marshal.PtrToStructure<PrinterNotifyInfo>(safePrinterNotifyInfo.handle);
+            var notifyInfo = Marshal.PtrToStructure<PrinterNotifyInfoCustom>(safePrinterNotifyInfo.handle);
 
-            var pData = (long)safePrinterNotifyInfo.handle + (long)Marshal.OffsetOf<PrinterNotifyInfo>("aData");
+            var pData = (long)safePrinterNotifyInfo.handle + (long)Marshal.OffsetOf<PrinterNotifyInfoCustom>("aData");
 
             var data = new PrinterNotifyInfoData[notifyInfo.Count];
 
@@ -34,7 +34,7 @@ namespace SpoolerWatcher.Handles
                 pData += Marshal.SizeOf<PrinterNotifyInfoData>();
             }
 
-            return new PrinterNotifyInfoCustom
+            return new PrinterNotifyInfo
             {
                 Version = notifyInfo.Version,
                 Flags = notifyInfo.Flags,

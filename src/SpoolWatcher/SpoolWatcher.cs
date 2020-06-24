@@ -102,7 +102,7 @@ namespace SpoolerWatcher
                 {
                     if (SpoolerNotificationReached != null)
                     {
-                        PrinterNotifyInfoCustom printerNotifyInfo = pNotifyInfo;
+                        PrinterNotifyInfo printerNotifyInfo = pNotifyInfo;
 
                         var datas = new List<NotificationInfo>();
 

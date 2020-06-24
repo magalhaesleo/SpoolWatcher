@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace SpoolerWatcher.Native.Structures
 {
-    internal struct PrinterNotifyInfoCustom
+    internal struct PrinterNotifyInfo
     {
         public uint Version;
         public uint Flags;
@@ -12,7 +12,7 @@ namespace SpoolerWatcher.Native.Structures
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    internal struct PrinterNotifyInfo
+    internal struct PrinterNotifyInfoCustom
     {
         public uint Version;
         public uint Flags;
