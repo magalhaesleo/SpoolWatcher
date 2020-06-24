@@ -1,6 +1,6 @@
 ﻿namespace SpoolerWatcher
 {
-    public enum JobNotifyFields
+    public enum JobNotifyField
     {
         PRINTER_NAME = 0,
         MACHINE_NAME = 1,

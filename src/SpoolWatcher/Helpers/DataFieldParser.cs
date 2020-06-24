@@ -9,143 +9,144 @@ namespace SpoolerWatcher.Helpers
     {
         internal static NotificationInfoData GetJobTypeData(PrinterNotifyInfoData infoData)
         {
-            switch ((JobNotifyFields)infoData.Field)
+            switch ((JobNotifyField)infoData.Field)
             {
-                case JobNotifyFields.PRINTER_NAME:
+                case JobNotifyField.PRINTER_NAME:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)JobNotifyFields.PRINTER_NAME,
+                        DataType = (ushort)JobNotifyField.PRINTER_NAME,
                         Data = Marshal.PtrToStringUni(infoData.NotifyData.Data.pBuf)
                     };
-                case JobNotifyFields.MACHINE_NAME:
+                case JobNotifyField.MACHINE_NAME:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)JobNotifyFields.MACHINE_NAME,
+                        DataType = (ushort)JobNotifyField.MACHINE_NAME,
                         Data = Marshal.PtrToStringUni(infoData.NotifyData.Data.pBuf)
                     };
-                case JobNotifyFields.PORT_NAME:
+                case JobNotifyField.PORT_NAME:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)JobNotifyFields.PORT_NAME,
+                        DataType = (ushort)JobNotifyField.PORT_NAME,
                         Data = Marshal.PtrToStringUni(infoData.NotifyData.Data.pBuf)
                     };
-                case JobNotifyFields.USER_NAME:
+                case JobNotifyField.USER_NAME:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)JobNotifyFields.USER_NAME,
+                        DataType = (ushort)JobNotifyField.USER_NAME,
                         Data = Marshal.PtrToStringUni(infoData.NotifyData.Data.pBuf)
                     };
-                case JobNotifyFields.NOTIFY_NAME:
+                case JobNotifyField.NOTIFY_NAME:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)JobNotifyFields.NOTIFY_NAME,
+                        DataType = (ushort)JobNotifyField.NOTIFY_NAME,
                         Data = Marshal.PtrToStringUni(infoData.NotifyData.Data.pBuf)
                     };
-                case JobNotifyFields.DATATYPE:
+                case JobNotifyField.DATATYPE:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)JobNotifyFields.DATATYPE,
+                        DataType = (ushort)JobNotifyField.DATATYPE,
                         Data = Marshal.PtrToStringUni(infoData.NotifyData.Data.pBuf)
                     };
-                case JobNotifyFields.PRINT_PROCESSOR:
+                case JobNotifyField.PRINT_PROCESSOR:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)JobNotifyFields.PRINT_PROCESSOR,
+                        DataType = (ushort)JobNotifyField.PRINT_PROCESSOR,
                         Data = Marshal.PtrToStringUni(infoData.NotifyData.Data.pBuf)
                     };
-                case JobNotifyFields.PARAMETERS:
+                case JobNotifyField.PARAMETERS:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)JobNotifyFields.PARAMETERS,
+                        DataType = (ushort)JobNotifyField.PARAMETERS,
                         Data = Marshal.PtrToStringUni(infoData.NotifyData.Data.pBuf)
                     };
-                case JobNotifyFields.DRIVER_NAME:
+                case JobNotifyField.DRIVER_NAME:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)JobNotifyFields.DRIVER_NAME,
+                        DataType = (ushort)JobNotifyField.DRIVER_NAME,
                         Data = Marshal.PtrToStringUni(infoData.NotifyData.Data.pBuf)
                     };
-                case JobNotifyFields.DEVMODE:
+                case JobNotifyField.DEVMODE:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)JobNotifyFields.DEVMODE
+                        DataType = (ushort)JobNotifyField.DEVMODE,
+                        Data = infoData.NotifyData.Data.pBuf
                     };
-                case JobNotifyFields.STATUS:
+                case JobNotifyField.STATUS:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)JobNotifyFields.STATUS,
+                        DataType = (ushort)JobNotifyField.STATUS,
                         Data = infoData.NotifyData.adwData0
                     };
-                case JobNotifyFields.STATUS_STRING:
+                case JobNotifyField.STATUS_STRING:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)JobNotifyFields.STATUS_STRING,
+                        DataType = (ushort)JobNotifyField.STATUS_STRING,
                         Data = Marshal.PtrToStringUni(infoData.NotifyData.Data.pBuf)
                     };
-                case JobNotifyFields.DOCUMENT:
+                case JobNotifyField.DOCUMENT:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)JobNotifyFields.DOCUMENT,
+                        DataType = (ushort)JobNotifyField.DOCUMENT,
                         Data = Marshal.PtrToStringUni(infoData.NotifyData.Data.pBuf)
                     };
-                case JobNotifyFields.PRIORITY:
+                case JobNotifyField.PRIORITY:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)JobNotifyFields.PRIORITY,
+                        DataType = (ushort)JobNotifyField.PRIORITY,
                         Data = infoData.NotifyData.adwData0
                     };
-                case JobNotifyFields.POSITION:
+                case JobNotifyField.POSITION:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)JobNotifyFields.POSITION,
+                        DataType = (ushort)JobNotifyField.POSITION,
                         Data = infoData.NotifyData.adwData0
                     };
-                case JobNotifyFields.SUBMITTED:
+                case JobNotifyField.SUBMITTED:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)JobNotifyFields.SUBMITTED,
+                        DataType = (ushort)JobNotifyField.SUBMITTED,
                         Data = Marshal.PtrToStructure<SystemTime>(infoData.NotifyData.Data.pBuf).ToDateTime()
                     };
-                case JobNotifyFields.START_TIME:
+                case JobNotifyField.START_TIME:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)JobNotifyFields.START_TIME,
+                        DataType = (ushort)JobNotifyField.START_TIME,
                         Data = infoData.NotifyData.adwData0
                     };
-                case JobNotifyFields.UNTIL_TIME:
+                case JobNotifyField.UNTIL_TIME:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)JobNotifyFields.UNTIL_TIME,
+                        DataType = (ushort)JobNotifyField.UNTIL_TIME,
                         Data = infoData.NotifyData.adwData0
                     };
-                case JobNotifyFields.TIME:
+                case JobNotifyField.TIME:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)JobNotifyFields.TIME,
+                        DataType = (ushort)JobNotifyField.TIME,
                         Data = infoData.NotifyData.adwData0
                     };
-                case JobNotifyFields.TOTAL_PAGES:
+                case JobNotifyField.TOTAL_PAGES:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)JobNotifyFields.TOTAL_PAGES,
+                        DataType = (ushort)JobNotifyField.TOTAL_PAGES,
                         Data = infoData.NotifyData.adwData0
                     };
-                case JobNotifyFields.PAGES_PRINTED:
+                case JobNotifyField.PAGES_PRINTED:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)JobNotifyFields.PAGES_PRINTED,
+                        DataType = (ushort)JobNotifyField.PAGES_PRINTED,
                         Data = infoData.NotifyData.adwData0
                     };
-                case JobNotifyFields.TOTAL_BYTES:
+                case JobNotifyField.TOTAL_BYTES:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)JobNotifyFields.TOTAL_BYTES,
+                        DataType = (ushort)JobNotifyField.TOTAL_BYTES,
                         Data = infoData.NotifyData.adwData0
                     };
-                case JobNotifyFields.BYTES_PRINTED:
+                case JobNotifyField.BYTES_PRINTED:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)JobNotifyFields.TOTAL_BYTES,
+                        DataType = (ushort)JobNotifyField.TOTAL_BYTES,
                         Data = infoData.NotifyData.adwData0
                     };
                 default:
@@ -157,135 +158,137 @@ namespace SpoolerWatcher.Helpers
 
         internal static NotificationInfoData GetPrinterTypeData(PrinterNotifyInfoData infoData)
         {
-            switch ((PrinterNotifyFields)infoData.Field)
+            switch ((PrinterNotifyField)infoData.Field)
             {
-                case PrinterNotifyFields.PRINTER_NAME:
+                case PrinterNotifyField.PRINTER_NAME:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)PrinterNotifyFields.PRINTER_NAME,
+                        DataType = (ushort)PrinterNotifyField.PRINTER_NAME,
                         Data = Marshal.PtrToStringUni(infoData.NotifyData.Data.pBuf)
                     };
-                case PrinterNotifyFields.SHARE_NAME:
+                case PrinterNotifyField.SHARE_NAME:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)PrinterNotifyFields.SHARE_NAME,
+                        DataType = (ushort)PrinterNotifyField.SHARE_NAME,
                         Data = Marshal.PtrToStringUni(infoData.NotifyData.Data.pBuf)
                     };
-                case PrinterNotifyFields.PORT_NAME:
+                case PrinterNotifyField.PORT_NAME:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)PrinterNotifyFields.PORT_NAME,
+                        DataType = (ushort)PrinterNotifyField.PORT_NAME,
                         Data = Marshal.PtrToStringUni(infoData.NotifyData.Data.pBuf)
                     };
-                case PrinterNotifyFields.DRIVER_NAME:
+                case PrinterNotifyField.DRIVER_NAME:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)PrinterNotifyFields.DRIVER_NAME,
+                        DataType = (ushort)PrinterNotifyField.DRIVER_NAME,
                         Data = Marshal.PtrToStringUni(infoData.NotifyData.Data.pBuf)
                     };
-                case PrinterNotifyFields.COMMENT:
+                case PrinterNotifyField.COMMENT:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)PrinterNotifyFields.COMMENT,
+                        DataType = (ushort)PrinterNotifyField.COMMENT,
                         Data = Marshal.PtrToStringUni(infoData.NotifyData.Data.pBuf)
                     };
-                case PrinterNotifyFields.LOCATION:
+                case PrinterNotifyField.LOCATION:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)PrinterNotifyFields.LOCATION,
+                        DataType = (ushort)PrinterNotifyField.LOCATION,
                         Data = Marshal.PtrToStringUni(infoData.NotifyData.Data.pBuf)
                     };
-                case PrinterNotifyFields.DEVMODE:
+                case PrinterNotifyField.DEVMODE:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)PrinterNotifyFields.DEVMODE
+                        DataType = (ushort)PrinterNotifyField.DEVMODE,
+                        Data = infoData.NotifyData.Data.pBuf
                     };
-                case PrinterNotifyFields.SEPFILE:
+                case PrinterNotifyField.SEPFILE:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)PrinterNotifyFields.SEPFILE,
+                        DataType = (ushort)PrinterNotifyField.SEPFILE,
                         Data = Marshal.PtrToStringUni(infoData.NotifyData.Data.pBuf)
                     };
-                case PrinterNotifyFields.PRINT_PROCESSOR:
+                case PrinterNotifyField.PRINT_PROCESSOR:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)PrinterNotifyFields.PRINT_PROCESSOR,
+                        DataType = (ushort)PrinterNotifyField.PRINT_PROCESSOR,
                         Data = Marshal.PtrToStringUni(infoData.NotifyData.Data.pBuf)
                     };
-                case PrinterNotifyFields.PARAMETERS:
+                case PrinterNotifyField.PARAMETERS:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)PrinterNotifyFields.PARAMETERS,
+                        DataType = (ushort)PrinterNotifyField.PARAMETERS,
                         Data = Marshal.PtrToStringUni(infoData.NotifyData.Data.pBuf)
                     };
-                case PrinterNotifyFields.DATATYPE:
+                case PrinterNotifyField.DATATYPE:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)PrinterNotifyFields.DATATYPE,
+                        DataType = (ushort)PrinterNotifyField.DATATYPE,
                         Data = Marshal.PtrToStringUni(infoData.NotifyData.Data.pBuf)
                     };
-                case PrinterNotifyFields.SECURITY_DESCRIPTOR:
+                case PrinterNotifyField.SECURITY_DESCRIPTOR:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)PrinterNotifyFields.SECURITY_DESCRIPTOR
+                        DataType = (ushort)PrinterNotifyField.SECURITY_DESCRIPTOR,
+                        Data = infoData.NotifyData.Data.pBuf
                     };
-                case PrinterNotifyFields.ATTRIBUTES:
+                case PrinterNotifyField.ATTRIBUTES:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)PrinterNotifyFields.ATTRIBUTES,
+                        DataType = (ushort)PrinterNotifyField.ATTRIBUTES,
                         Data = infoData.NotifyData.adwData0
                     };
-                case PrinterNotifyFields.PRIORITY:
+                case PrinterNotifyField.PRIORITY:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)PrinterNotifyFields.PRIORITY,
+                        DataType = (ushort)PrinterNotifyField.PRIORITY,
                         Data = infoData.NotifyData.adwData0
                     };
-                case PrinterNotifyFields.DEFAULT_PRIORITY:
+                case PrinterNotifyField.DEFAULT_PRIORITY:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)PrinterNotifyFields.DEFAULT_PRIORITY,
+                        DataType = (ushort)PrinterNotifyField.DEFAULT_PRIORITY,
                         Data = infoData.NotifyData.adwData0
                     };
-                case PrinterNotifyFields.START_TIME:
+                case PrinterNotifyField.START_TIME:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)PrinterNotifyFields.START_TIME,
+                        DataType = (ushort)PrinterNotifyField.START_TIME,
                         Data = infoData.NotifyData.adwData0
                     };
-                case PrinterNotifyFields.UNTIL_TIME:
+                case PrinterNotifyField.UNTIL_TIME:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)PrinterNotifyFields.UNTIL_TIME,
+                        DataType = (ushort)PrinterNotifyField.UNTIL_TIME,
                         Data = infoData.NotifyData.adwData0
                     };
-                case PrinterNotifyFields.STATUS:
+                case PrinterNotifyField.STATUS:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)PrinterNotifyFields.STATUS,
+                        DataType = (ushort)PrinterNotifyField.STATUS,
                         Data = infoData.NotifyData.adwData0
                     };
-                case PrinterNotifyFields.CJOBS:
+                case PrinterNotifyField.CJOBS:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)PrinterNotifyFields.CJOBS,
+                        DataType = (ushort)PrinterNotifyField.CJOBS,
                         Data = infoData.NotifyData.adwData0
                     };
-                case PrinterNotifyFields.AVERAGE_PPM:
+                case PrinterNotifyField.AVERAGE_PPM:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)PrinterNotifyFields.AVERAGE_PPM,
+                        DataType = (ushort)PrinterNotifyField.AVERAGE_PPM,
                         Data = infoData.NotifyData.adwData0
                     };
-                case PrinterNotifyFields.OBJECT_GUID:
+                case PrinterNotifyField.OBJECT_GUID:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)PrinterNotifyFields.OBJECT_GUID
+                        DataType = (ushort)PrinterNotifyField.OBJECT_GUID
                     };
-                case PrinterNotifyFields.FRIENDLY_NAME:
+                case PrinterNotifyField.FRIENDLY_NAME:
                     return new NotificationInfoData
                     {
-                        DataType = (ushort)PrinterNotifyFields.FRIENDLY_NAME
+                        DataType = (ushort)PrinterNotifyField.FRIENDLY_NAME
                     };
                 default:
                     break;

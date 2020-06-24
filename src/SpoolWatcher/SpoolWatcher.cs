@@ -15,39 +15,24 @@ namespace SpoolerWatcher
         private SafeHPrinter hPrinter;
         private bool disposed = false;
         private readonly string printerName;
-        private readonly PrinterChange printerChange;
         private readonly PrinterNotifyCategory printerNotifyCategory;
-        private readonly NotifyOptions[] notifyOptions;
         private readonly ManualResetEventSlim stopEvent = new ManualResetEventSlim();
         private SafeNotificationHandle notificationHandle;
         private Thread tNotifications;
+        public PrinterChange PrinterChange { get; set; }
+        public PrinterNotifyFilters PrinterNotifyFilter { get; set; }
+        public JobNotifyFilters JobNotifyFilter { get; set; }
 
         public event EventHandler<SpoolerNotificationEventArgs> SpoolerNotificationReached;
 
-        public SpoolWatcher(string printerName, params NotifyOptions[] notifyOptions) : this(printerName, PrinterNotifyCategory.CategoryAll, notifyOptions)
+        public SpoolWatcher(string printerName) : this(printerName, PrinterNotifyCategory.CategoryAll)
         {
         }
 
-        public SpoolWatcher(string printerName, PrinterChange printerChange) : this(printerName, PrinterNotifyCategory.CategoryAll, printerChange)
-        {
-        }
-
-        public SpoolWatcher(string printerName, PrinterNotifyCategory printerNotifyCategory, params NotifyOptions[] notifyOptions) : this(printerName, printerNotifyCategory, 0, notifyOptions)
-        {
-            if (notifyOptions == null || notifyOptions.Length == 0)
-                throw new ArgumentException(nameof(notifyOptions));
-        }
-
-        public SpoolWatcher(string printerName, PrinterNotifyCategory printerNotifyCategory, PrinterChange printerChange) : this(printerName, printerNotifyCategory, printerChange, null)
-        {
-        }
-
-        public SpoolWatcher(string printerName, PrinterNotifyCategory printerNotifyCategory, PrinterChange printerChange, params NotifyOptions[] notifyOptions)
+        public SpoolWatcher(string printerName, PrinterNotifyCategory printerNotifyCategory)
         {
             this.printerName = printerName;
-            this.printerChange = printerChange;
             this.printerNotifyCategory = printerNotifyCategory;
-            this.notifyOptions = notifyOptions;
         }
 
         public void Start()
@@ -61,13 +46,14 @@ namespace SpoolerWatcher
 
             var printerNotifyOptions = new PrinterNotifyOptionsNative();
             printerNotifyOptions.Version = 2;
-            printerNotifyOptions.Count = (uint)notifyOptions.Length;
+
+            var optionsType = CreateOptionsType();
+
+            printerNotifyOptions.Count = (uint)optionsType.Count();
 
             var pNotifyOptionsSz = Marshal.SizeOf<PrinterNotifyOptionsNative>();
 
-            printerNotifyOptions.pTypes = Marshal.AllocHGlobal(pNotifyOptionsSz * notifyOptions.Length);
-
-            var optionsType = CreateOptionsType();
+            printerNotifyOptions.pTypes = Marshal.AllocHGlobal(pNotifyOptionsSz * optionsType.Count());
 
             for (int i = 0; i < optionsType.Count(); i++)
             {
@@ -76,7 +62,7 @@ namespace SpoolerWatcher
                 Marshal.StructureToPtr(optionsType.ElementAt(i), ptr, false);
             }
 
-            notificationHandle = WinSpool.FindFirstPrinterChangeNotification(hPrinter, (uint)printerChange, (uint)printerNotifyCategory, ref printerNotifyOptions);
+            notificationHandle = WinSpool.FindFirstPrinterChangeNotification(hPrinter, (uint)PrinterChange, (uint)printerNotifyCategory, ref printerNotifyOptions);
 
             foreach (var optionType in optionsType)
             {
@@ -163,51 +149,51 @@ namespace SpoolerWatcher
 
             var sz = sizeof(ushort);
 
-            int ofs;
+            var printerFields = PrinterNotifyFilter.ToPrinterNotifyFields();
 
-            foreach (var notifyOption in notifyOptions)
+            if (printerFields.Any())
             {
-                var optionType = new PrinterNotifyOptionsType();
+                var pOptionType = new PrinterNotifyOptionsType();
 
-                switch (notifyOption.NotifyType)
+                pOptionType.Type = (ushort)NotifyType.Printer;
+
+                pOptionType.Count = (uint)printerFields.Count();
+
+                pOptionType.pFields = Marshal.AllocHGlobal(printerFields.Count() * sz);
+
+                int ofs = 0;
+
+                foreach (var field in printerFields)
                 {
-                    case NotifyType.Printer:
-                        var pNotifyOption = (PrinterNotifyOptions)notifyOption;
+                    Marshal.WriteInt16(pOptionType.pFields, ofs, (short)field);
 
-                        optionType.Type = (ushort)NotifyType.Printer;
-                        optionType.Count = (uint)pNotifyOption.PrinterNotifyFields.Length;
-                        optionType.pFields = Marshal.AllocHGlobal(pNotifyOption.PrinterNotifyFields.Length * sz);
-
-                        ofs = 0;
-
-                        foreach (var field in pNotifyOption.PrinterNotifyFields)
-                        {
-                            Marshal.WriteInt16(optionType.pFields, ofs, (short)field);
-                            ofs += sz;
-                        }
-
-                        break;
-                    case NotifyType.Job:
-                        var jNotifyOption = (JobNotifyOptions)notifyOption;
-
-                        optionType.Type = (ushort)NotifyType.Job;
-                        optionType.Count = (uint)jNotifyOption.JobNotifyFields.Length;
-                        optionType.pFields = Marshal.AllocHGlobal(jNotifyOption.JobNotifyFields.Length * sz);
-
-                        ofs = 0;
-
-                        foreach (var field in jNotifyOption.JobNotifyFields)
-                        {
-                            Marshal.WriteInt16(optionType.pFields, ofs, (short)field);
-                            ofs += sz;
-                        }
-
-                        break;
-                    default:
-                        break;
+                    ofs += sz;
                 }
 
-                printerNotifyOptionsTypes.Add(optionType);
+                printerNotifyOptionsTypes.Add(pOptionType);
+            }
+
+            var jobFields = JobNotifyFilter.ToJobNotifyFields();
+
+            if (jobFields.Any())
+            {
+                var jOptionType = new PrinterNotifyOptionsType();
+
+                jOptionType.Type = (ushort)NotifyType.Job;
+
+                jOptionType.Count = (uint)jobFields.Count();
+
+                jOptionType.pFields = Marshal.AllocHGlobal(jobFields.Count() * sz);
+
+                var ofs = 0;
+
+                foreach (var field in jobFields)
+                {
+                    Marshal.WriteInt16(jOptionType.pFields, ofs, (short)field);
+                    ofs += sz;
+                }
+
+                printerNotifyOptionsTypes.Add(jOptionType);
             }
 
             return printerNotifyOptionsTypes;

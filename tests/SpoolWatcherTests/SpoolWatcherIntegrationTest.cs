@@ -20,22 +20,21 @@ namespace SpoolerWatchers.Tests
         [Test]
         public void Print_Test_Page_Should_Call_Event()
         {
-            var fields = new JobNotifyFields[] { JobNotifyFields.STATUS };
+            using var spoolWatcher = new SpoolWatcher(printQueue.Name);
 
-            var jOptions = new JobNotifyOptions(fields);
-            var pOptions = new PrinterNotifyOptions(new PrinterNotifyFields[] { PrinterNotifyFields.STATUS_STRING });
+            spoolWatcher.PrinterNotifyFilter = PrinterNotifyFilters.DATATYPE | PrinterNotifyFilters.STATUS;
 
-            using var spoolWatcher = new SpoolWatcher(printQueue.Name, jOptions, pOptions);
+            spoolWatcher.JobNotifyFilter = JobNotifyFilters.DATATYPE | JobNotifyFilters.STATUS;
 
             spoolWatcher.Start();
 
             using var waitEv = new ManualResetEventSlim();
 
-            spoolWatcher.SpoolerNotificationReached += (o, e) => 
+            spoolWatcher.SpoolerNotificationReached += (o, e) =>
             {
                 waitEv.Set();
             };
-            
+
             var job = printQueue.AddJob();
 
             var bytes = Encoding.UTF8.GetBytes("Test printing");
