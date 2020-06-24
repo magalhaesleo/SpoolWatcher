@@ -44,14 +44,14 @@ namespace SpoolerWatcher
                 throw new InvalidOperationException($"Error: {errorCode}");
             }
 
-            var printerNotifyOptions = new PrinterNotifyOptionsNative();
+            var printerNotifyOptions = new PrinterNotifyOptions();
             printerNotifyOptions.Version = 2;
 
             var optionsType = CreateOptionsType();
 
             printerNotifyOptions.Count = (uint)optionsType.Count();
 
-            var pNotifyOptionsSz = Marshal.SizeOf<PrinterNotifyOptionsNative>();
+            var pNotifyOptionsSz = Marshal.SizeOf<PrinterNotifyOptions>();
 
             printerNotifyOptions.pTypes = Marshal.AllocHGlobal(pNotifyOptionsSz * optionsType.Count());
 

@@ -15,7 +15,7 @@ namespace SpoolerWatcher
         internal static extern bool ClosePrinter(IntPtr hPrinter);
 
         [DllImport("winspool.drv", EntryPoint = "FindFirstPrinterChangeNotification", SetLastError = true, CharSet = CharSet.Auto, ExactSpelling = true)]
-        internal static extern SafeNotificationHandle FindFirstPrinterChangeNotification(SafeHPrinter hPrinter, uint fdwFlags, uint fdwOptions, ref PrinterNotifyOptionsNative pPrinterNotifyOptions);
+        internal static extern SafeNotificationHandle FindFirstPrinterChangeNotification(SafeHPrinter hPrinter, uint fdwFlags, uint fdwOptions, ref PrinterNotifyOptions pPrinterNotifyOptions);
 
         [DllImport("winspool.drv", EntryPoint = "FindNextPrinterChangeNotification", SetLastError = true, CharSet = CharSet.Auto, ExactSpelling = true, CallingConvention = CallingConvention.StdCall)]
         [return: MarshalAs(UnmanagedType.Bool)]
