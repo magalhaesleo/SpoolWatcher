@@ -25,7 +25,7 @@ namespace SpoolerWatcher
         public PrinterNotifyFilters PrinterNotifyFilter { get; set; }
         public JobNotifyFilters JobNotifyFilter { get; set; }
 
-        public event EventHandler<SpoolerNotificationEventArgs> SpoolerNotificationReached;
+        public event EventHandler<SpoolNotificationEventArgs> SpoolerNotificationReached;
 
         public SpoolWatcher(string printerName) : this(printerName, PrinterNotifyCategory.CategoryAll)
         {
@@ -153,7 +153,7 @@ namespace SpoolerWatcher
                             datas.Add(notificationInfo);
                         }
 
-                        var evArgs = new SpoolerNotificationEventArgs
+                        var evArgs = new SpoolNotificationEventArgs
                         {
                             PrinterChange = change,
                             NotificationsData = datas.ToArray()

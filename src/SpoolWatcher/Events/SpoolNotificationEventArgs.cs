@@ -3,7 +3,7 @@ using System;
 
 namespace SpoolerWatcher
 {
-    public class SpoolerNotificationEventArgs : EventArgs
+    public class SpoolNotificationEventArgs : EventArgs
     {
         public PrinterChange PrinterChange { get; set; }
         public NotificationInfo[] NotificationsData { get; set; }
