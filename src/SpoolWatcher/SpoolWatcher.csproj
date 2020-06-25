@@ -11,6 +11,8 @@
     <Company>magalhaesleo</Company>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>A simple wrapper to simplify the usage of functions FindFirstPrinterChangeNotification, FindNextPrinterChangeNotification and FindClosePrinterChangeNotification in managed code.</Description>
+    <Version>1.0.1</Version>
+    <PackageReleaseNotes>Added package description</PackageReleaseNotes>
   </PropertyGroup>
 
 </Project>
