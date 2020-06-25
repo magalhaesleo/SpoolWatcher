@@ -40,8 +40,8 @@ private static void SpoolWatcher_SpoolerNotificationReached(object sender, Spool
 
     foreach (var data in e.NotificationsData)
     {
-        Console.WriteLine("type: {0}", data.Data.DataType);
-        Console.WriteLine("data: {0}", data.Data.Data);
+        Console.WriteLine("type: {0}", data.InfoData.DataType);
+        Console.WriteLine("data: {0}", data.InfoData.Data);
     }
 }
 ```
