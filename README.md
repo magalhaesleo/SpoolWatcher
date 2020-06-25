@@ -68,5 +68,7 @@ To watch a print server instead a printer pass null as argument in constructor
                     if (key.Key == ConsoleKey.Escape)
                         break;
                 }
+                
+                spoolWatcher.Stop();
             }
 ```
