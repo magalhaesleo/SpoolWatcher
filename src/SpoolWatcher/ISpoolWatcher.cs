@@ -2,7 +2,7 @@
 
 namespace SpoolerWatcher
 {
-    public interface ISpoolWatcher
+    public interface ISpoolWatcher : IDisposable
     {
         event EventHandler<SpoolerNotificationEventArgs> SpoolerNotificationReached;
         PrinterNotifyFilters PrinterNotifyFilter { get; set; }

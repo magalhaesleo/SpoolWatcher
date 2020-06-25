@@ -6,6 +6,10 @@
     <PackageProjectUrl>https://github.com/magalhaesleo/SpoolWatcher</PackageProjectUrl>
     <RepositoryUrl>https://github.com/magalhaesleo/SpoolWatcher.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Authors>magalhaesleo</Authors>
+    <Company>magalhaesleo</Company>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
 </Project>

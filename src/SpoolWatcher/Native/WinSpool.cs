@@ -15,11 +15,15 @@ namespace SpoolerWatcher
         internal static extern bool ClosePrinter(IntPtr hPrinter);
 
         [DllImport("winspool.drv", EntryPoint = "FindFirstPrinterChangeNotification", SetLastError = true, CharSet = CharSet.Auto, ExactSpelling = true)]
-        internal static extern SafeNotificationHandle FindFirstPrinterChangeNotification(SafeHPrinter hPrinter, uint fdwFlags, uint fdwOptions, ref PrinterNotifyOptions pPrinterNotifyOptions);
+        internal static extern SafeNotificationHandle FindFirstPrinterChangeNotification(SafeHPrinter hPrinter, PrinterChange fdwFlags, uint fdwOptions, ref PrinterNotifyOptions pPrinterNotifyOptions);
 
         [DllImport("winspool.drv", EntryPoint = "FindNextPrinterChangeNotification", SetLastError = true, CharSet = CharSet.Auto, ExactSpelling = true, CallingConvention = CallingConvention.StdCall)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool FindNextPrinterChangeNotification(SafeNotificationHandle hChange, out uint pdwChange, IntPtr printerNotifyOptions, out SafePrinterNotifyInfo pPrinterNotifyInfo);
+        internal static extern bool FindNextPrinterChangeNotification(SafeNotificationHandle hChange, out PrinterChange pdwChange, IntPtr printerNotifyOptions, out SafePrinterNotifyInfo pPrinterNotifyInfo);
+
+        [DllImport("winspool.drv", EntryPoint = "FindNextPrinterChangeNotification", SetLastError = true, CharSet = CharSet.Auto, ExactSpelling = true, CallingConvention = CallingConvention.StdCall)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool FindNextPrinterChangeNotification(SafeNotificationHandle hChange, out PrinterChange pdwChange, PrinterNotifyOptions printerNotifyOptions, out SafePrinterNotifyInfo pPrinterNotifyInfo);
 
         [DllImport("winspool.drv", EntryPoint = "FindClosePrinterChangeNotification", SetLastError = true, CharSet = CharSet.Auto, ExactSpelling = true, CallingConvention = CallingConvention.StdCall)]
         [return: MarshalAs(UnmanagedType.Bool)]

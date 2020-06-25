@@ -10,7 +10,7 @@ using System.Threading;
 
 namespace SpoolerWatcher
 {
-    public class SpoolWatcher : ISpoolWatcher, IDisposable
+    public class SpoolWatcher : ISpoolWatcher
     {
         private SafeHPrinter hPrinter;
         private bool disposed = false;
@@ -19,6 +19,8 @@ namespace SpoolerWatcher
         private readonly ManualResetEventSlim stopEvent = new ManualResetEventSlim();
         private SafeNotificationHandle notificationHandle;
         private Thread tNotifications;
+        private const uint PRINTER_NOTIFY_INFO_DISCARDED = 1;
+        private const uint PRINTER_NOTIFY_OPTIONS_REFRESH = 1;
         public PrinterChange PrinterChange { get; set; }
         public PrinterNotifyFilters PrinterNotifyFilter { get; set; }
         public JobNotifyFilters JobNotifyFilter { get; set; }
@@ -41,10 +43,11 @@ namespace SpoolerWatcher
             {
                 var errorCode = Marshal.GetLastWin32Error();
 
-                throw new InvalidOperationException($"Error: {errorCode}");
+                throw new SpoolWatcherException($"Error in OpenPrinter: {errorCode}");
             }
 
             var printerNotifyOptions = new PrinterNotifyOptions();
+
             printerNotifyOptions.Version = 2;
 
             var optionsType = CreateOptionsType();
@@ -62,7 +65,7 @@ namespace SpoolerWatcher
                 Marshal.StructureToPtr(optionsType.ElementAt(i), ptr, false);
             }
 
-            notificationHandle = WinSpool.FindFirstPrinterChangeNotification(hPrinter, (uint)PrinterChange, (uint)printerNotifyCategory, ref printerNotifyOptions);
+            notificationHandle = WinSpool.FindFirstPrinterChangeNotification(hPrinter, PrinterChange, (uint)printerNotifyCategory, ref printerNotifyOptions);
 
             foreach (var optionType in optionsType)
             {
@@ -75,8 +78,10 @@ namespace SpoolerWatcher
             {
                 var errorCode = Marshal.GetLastWin32Error();
 
-                throw new InvalidOperationException($"Error: {errorCode}");
+                throw new SpoolWatcherException($"Error in FindFirstPrinterChangeNotification: {errorCode}");
             }
+
+            stopEvent.Reset();
 
             tNotifications = new Thread(() => WaitForNotifications());
 
@@ -100,12 +105,29 @@ namespace SpoolerWatcher
 
             while (WaitHandle.WaitAny(handles) == 0)
             {
-                if (WinSpool.FindNextPrinterChangeNotification(notificationHandle, out var change, IntPtr.Zero, out var pNotifyInfo))
+                if (WinSpool.FindNextPrinterChangeNotification(notificationHandle, out var change, IntPtr.Zero, out SafePrinterNotifyInfo pNotifyInfo))
                 {
+                    PrinterNotifyInfo printerNotifyInfo = pNotifyInfo;
+
+                    while ((printerNotifyInfo.Flags & PRINTER_NOTIFY_INFO_DISCARDED) == PRINTER_NOTIFY_INFO_DISCARDED)
+                    {
+                        pNotifyInfo.Close();
+
+                        var notifyOptions = new PrinterNotifyOptions
+                        {
+                            Flags = PRINTER_NOTIFY_OPTIONS_REFRESH
+                        };
+
+                        var nextRet = WinSpool.FindNextPrinterChangeNotification(notificationHandle, out change, notifyOptions, out pNotifyInfo);
+
+                        printerNotifyInfo = pNotifyInfo;
+
+                        if (!nextRet)
+                            break;
+                    }
+
                     if (SpoolerNotificationReached != null)
                     {
-                        PrinterNotifyInfo printerNotifyInfo = pNotifyInfo;
-
                         var datas = new List<NotificationInfo>();
 
                         for (uint i = 0; i < printerNotifyInfo.Count; i++)
@@ -133,7 +155,7 @@ namespace SpoolerWatcher
 
                         var evArgs = new SpoolerNotificationEventArgs
                         {
-                            PrinterChange = (PrinterChange)change,
+                            PrinterChange = change,
                             NotificationsData = datas.ToArray()
                         };
 
@@ -205,6 +227,8 @@ namespace SpoolerWatcher
         {
             if (disposed)
                 return;
+
+            stopEvent.Set();
 
             if (disposing)
             {
