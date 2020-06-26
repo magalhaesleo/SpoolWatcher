@@ -156,7 +156,7 @@ namespace SpoolerWatcher
                         var evArgs = new SpoolNotificationEventArgs
                         {
                             PrinterChange = change,
-                            NotificationsData = datas.ToArray()
+                            NotificationInfos = datas.ToArray()
                         };
 
                         SpoolerNotificationReached(this, evArgs);

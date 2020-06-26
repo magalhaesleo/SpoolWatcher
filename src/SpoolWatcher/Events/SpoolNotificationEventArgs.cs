@@ -6,6 +6,6 @@ namespace SpoolerWatcher
     public class SpoolNotificationEventArgs : EventArgs
     {
         public PrinterChange PrinterChange { get; set; }
-        public NotificationInfo[] NotificationsData { get; set; }
+        public NotificationInfo[] NotificationInfos { get; set; }
     }
 }
